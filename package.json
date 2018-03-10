@@ -1,0 +1,30 @@
+{
+  "name": "commithub",
+  "version": "0.1.0",
+  "description": "An experiment with the GitHub API and Azure Functions",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szul/CommitHub.git"
+  },
+  "keywords": [
+    "github",
+    "git",
+    "azure",
+    "functions",
+    "nodejs",
+    "javascript"
+  ],
+  "author": "Michael Szul <michael@szul.us>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/szul/CommitHub/issues"
+  },
+  "homepage": "https://github.com/szul/CommitHub#readme",
+  "dependencies": {
+    "@octokit/rest": "^15.1.9"
+  }
+}
