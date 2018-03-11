@@ -16,6 +16,23 @@ module.exports = function (context, req) {
             let g = data.map(x => {
                 return { id: x.id, name: x.name, isFork: x.fork }
             });
+            let p = [];
+            for(let i = 0; i < g.length; i++) {
+                p.push(new Promise(resolve => {
+                    octokit.repos.getStatsCommitActivity({ 
+                        owner: uname
+                        , repo:g[i].name
+                    }).then(pResult => {
+                        context.log(pResult);
+                        resolve(pResult);
+                    });
+                }));
+            }
+            Promise.all(p).then(data => {
+                context.log(data);
+            }).catch(err => {
+                context.log(`Any error occurred while getting the repository list: ${e}`)
+            });
             context.res = {
                  status: 200
                  , body: "Processed..." //Build response JSON
@@ -23,7 +40,7 @@ module.exports = function (context, req) {
         }).catch(err => {
             context.res = {
                 status: 500
-                , body: `Any error occurred while getting the repository list: ${e}`
+                , body: `Any error occurred while getting the repository information: ${err}`
             };
         });
     }
