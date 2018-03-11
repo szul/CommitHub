@@ -1,10 +1,14 @@
+//@ts-check
+
 module.exports = function (context, req) {
-    const octokit = require("@octokit/rest")();
+    require("dotenv-extended").load();
+    const octokit = require("@octokit/rest");
+    const octo = new octokit();
     context.log("JavaScript HTTP trigger function processed a request.");
     try {
         context.log("Connecting to GitHub...");
         const uname = req.query.name;
-        octokit.repos.getForUser({
+        octo.repos.getForUser({
             username: uname
             , type: "all"
             , sort: "pushed"
@@ -20,7 +24,7 @@ module.exports = function (context, req) {
             for(let i = 0; i < g.length; i++) {
                 let repo = g[i];
                 p.push(new Promise(resolve => {
-                    octokit.repos.getStatsParticipation({ 
+                    octo.repos.getStatsParticipation({ 
                         owner: uname
                         , repo:repo.name
                     }).then(pResult => {
@@ -32,6 +36,16 @@ module.exports = function (context, req) {
                         resolve(repo);
                     });
                 }));
+                p.push(new Promise(resolve => {
+                    octo.repos.getStatsCodeFrequency({
+                        owner: uname
+                        , repo:repo.name
+                    }).then(fResult => {
+                        let f = fResult.data;
+                        context.log(f);
+                        resolve(f);
+                    });
+                }));
             }
             Promise.all(p).then(data => {
                 context.log(data);
@@ -41,7 +55,7 @@ module.exports = function (context, req) {
                };
                context.done();
             }).catch(err => {
-                context.log(`Any error occurred while getting the repository list: ${e}`)
+                context.log(`Any error occurred while getting the repository list: ${err}`)
             });
         }).catch(err => {
             context.res = {

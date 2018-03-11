@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/szul/CommitHub#readme",
   "dependencies": {
-    "@octokit/rest": "^15.1.9"
+    "@octokit/rest": "^15.1.9",
+    "dotenv-extended": "^2.0.1"
   }
 }
