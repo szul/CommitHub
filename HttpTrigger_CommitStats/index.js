@@ -18,30 +18,37 @@ module.exports = function (context, req) {
             });
             let p = [];
             for(let i = 0; i < g.length; i++) {
+                let repo = g[i];
                 p.push(new Promise(resolve => {
-                    octokit.repos.getStatsCommitActivity({ 
+                    octokit.repos.getStatsParticipation({ 
                         owner: uname
-                        , repo:g[i].name
+                        , repo:repo.name
                     }).then(pResult => {
-                        context.log(pResult);
-                        resolve(pResult);
+                        let o = pResult.data.owner;
+                        let pSum = Object.keys(o).reduce((a, k) => {
+                            return a + o[k];
+                        });
+                        repo.commits = pSum;
+                        resolve(repo);
                     });
                 }));
             }
             Promise.all(p).then(data => {
                 context.log(data);
+                context.res = {
+                    status: 200
+                    , body: "Processed..." //Build response JSON
+               };
+               context.done();
             }).catch(err => {
                 context.log(`Any error occurred while getting the repository list: ${e}`)
             });
-            context.res = {
-                 status: 200
-                 , body: "Processed..." //Build response JSON
-            };
         }).catch(err => {
             context.res = {
                 status: 500
                 , body: `Any error occurred while getting the repository information: ${err}`
             };
+            context.done();
         });
     }
     catch(e) {
@@ -49,6 +56,6 @@ module.exports = function (context, req) {
             status: 500
             , body: `Any error has occurred while processing your request: ${e}`
         };
+        context.done();
     }
-    context.done();
 };
