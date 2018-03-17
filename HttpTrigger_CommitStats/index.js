@@ -8,6 +8,18 @@ module.exports = function (context, req) {
     try {
         context.log("Connecting to GitHub...");
         const uname = req.query.name;
+        /*
+        octo.authenticate({
+            type: "oauth"
+            , key: process.env.CLIENT_ID
+            , secret: process.env.CLIENT_SECRET
+        });
+        */
+        octo.authenticate({
+            type: "token"
+            , token: process.env.TOKEN
+        });
+
         octo.repos.getForUser({
             username: uname
             , type: "all"
@@ -29,13 +41,21 @@ module.exports = function (context, req) {
                         , repo:repo.name
                     }).then(pResult => {
                         let o = pResult.data.owner;
-                        let pSum = Object.keys(o).reduce((a, k) => {
-                            return a + o[k];
+                        let pSum = Object.keys(o).reduce((a, k) => { //TypeScript errors out that reduce() expects strings, but we are summing, so we'll have to convert back and forth.
+                            if(o.hasOwnProperty(k)) {
+                                try {
+                                    return (parseInt(a, 10) + parseInt(o[k], 10)).toString();
+                                }
+                                catch(e) {
+                                    return (0).toString();
+                                }
+                            }
                         });
                         repo.commits = pSum;
                         resolve(repo);
                     });
                 }));
+                /*
                 p.push(new Promise(resolve => {
                     octo.repos.getStatsCodeFrequency({
                         owner: uname
@@ -46,6 +66,7 @@ module.exports = function (context, req) {
                         resolve(f);
                     });
                 }));
+                */
             }
             Promise.all(p).then(data => {
                 context.log(data);
