@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="github, microsoft, mvp, commits, azure functions" />
+    <meta name="description" content="Tool to get a yearly aggregrate of your GitHub commits for things like the Microsoft MVP Program." />
+    <title>Get a Yearly Aggregate of Your GitHub Commits</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" />
+    <link rel="stylesheet" href="./node_modules/normalize.css/normalize.css" />
+    <link rel="stylesheet" href="./node_modules/milligram/dist/milligram.min.css" />
+    <link rel="stylesheet" href="./node_modules/metronical.metron/dist/css/app.css" />
+    <script type="text/javascript" src="../node_modules/rsvp/dist/rsvp.js"></script>
+    <script type="text/javascript" src="../node_modules/metronical.metron/dist/gen/metron.js"></script>
+  </head>
+  <body>
+      <h1>GitHub Commits for the Past Year</h1>
+      <div class="container">
+
+      </div>
+  </body>
+  <script type="text/javascript">
+    var testUrl = "http://localhost:7071/api/HttpTrigger_CommitStats";
+    metron.web.get(testUrl + "?name=", {}, null, "json", function (data) {
+                console.log(data);
+            }, (txt, jsn, xml) => {
+                console.log(txt);
+            });
+  </script>
+</html>

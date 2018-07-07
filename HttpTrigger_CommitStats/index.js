@@ -8,13 +8,7 @@ module.exports = function (context, req) {
     try {
         context.log("Connecting to GitHub...");
         const uname = req.query.name;
-        /*
-        octo.authenticate({
-            type: "oauth"
-            , key: process.env.CLIENT_ID
-            , secret: process.env.CLIENT_SECRET
-        });
-        */
+
         octo.authenticate({
             type: "token"
             , token: process.env.TOKEN
@@ -55,24 +49,36 @@ module.exports = function (context, req) {
                         resolve(repo);
                     });
                 }));
-                /*
                 p.push(new Promise(resolve => {
                     octo.repos.getStatsCodeFrequency({
                         owner: uname
                         , repo:repo.name
                     }).then(fResult => {
                         let f = fResult.data;
-                        context.log(f);
-                        resolve(f);
+                        let additions = 0;
+                        let subtractions = 0;
+                        for(let ii = 0; ii < f.length; ii++) {
+                            try {
+                                additions += parseInt(f[ii][1]);
+                                subtractions += parseInt(f[ii][2]);
+                            }
+                            catch(ei) {
+                                context.log("Error in stats: " + ei);
+                            }
+                        }
+                        repo.additions = additions;
+                        repo.subtractions = subtractions;
+                        resolve(repo);
                     });
                 }));
-                */
             }
             Promise.all(p).then(data => {
-                context.log(data);
+                const commits = data.filter(function(itm, pos) {
+                    return data.indexOf(itm) == pos;
+                })
                 context.res = {
                     status: 200
-                    , body: "Processed..." //Build response JSON
+                    , body: { commits }
                };
                context.done();
             }).catch(err => {
