@@ -16,16 +16,55 @@
   </head>
   <body>
       <h1>GitHub Commits for the Past Year</h1>
+      <div data-m-segment="alert">
+      </div>
+      <fieldset>
+        <label for="gUsername">Your GitHub Username</label>
+        <input type="text" id="gUsername" name="gUsername" />
+        <button class="button button-outline">Gimme Stats</button>
+      </fieldset>
       <div class="container">
-
       </div>
   </body>
   <script type="text/javascript">
     var testUrl = "http://localhost:7071/api/HttpTrigger_CommitStats";
-    metron.web.get(testUrl + "?name=", {}, null, "json", function (data) {
-                console.log(data);
-            }, (txt, jsn, xml) => {
-                console.log(txt);
-            });
+    function getStats(uname) {
+      metron.web.get(testUrl + "?name=" + uname, {}, null, "json", function (data) {
+            console.log(data);
+            var repos = data.commits;
+            for(var i = 0; i < repos.length; i++) {
+              document.querySelector(".container").innerHTML =  '<div class="row"> \
+              <div class="column"> \
+                <table> \
+                  <thead> \
+                    <tr> \
+                      <th>Repo</th> \
+                      <th>Fork?</th> \
+                      <th>Commits</th> \
+                      <th>Additions</th> \
+                      <th>Subtractions</th> \
+                    </tr> \
+                  </thead> \
+                  <tbody> \
+                    <tr> \
+                      <td>' + repos[i].name + '</td> \
+                      <td>' + repos[i].isFork + '</td> \
+                      <td>' + repos[i].commits + '</td> \
+                      <td>' + repos[i].additions + '</td> \
+                      <td>' + repos[i].subtractions + '</td> \
+                    </tr> \
+                  </tbody> \
+                </table> \
+              </div> \
+            </div>';
+            }
+        }, (txt, jsn, xml) => {
+            document.querySelector("[data-m-segment='alert']").innerHTML = txt;
+        });
+    }
+    document.querySelector("button").addEventListener("click", function(e) {
+      var uname = document.querySelector("#gUsername").value;
+      getStats(uname);
+    });
   </script>
 </html>
