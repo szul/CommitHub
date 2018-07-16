@@ -57,7 +57,7 @@ module.exports = function (context, req) {
                         owner: uname
                         , repo:repo.name
                     }).then(fResult => {
-                        let f = fResult.data;
+                        let f = fResult.data.reverse();
                         let additions = 0;
                         let subtractions = 0;
                         for(let ii = 0; ii < f.length; ii++) {
@@ -66,12 +66,17 @@ module.exports = function (context, req) {
                                 subtractions += parseInt(f[ii][2]);
                             }
                             catch(ei) {
-                                context.log("Error in stats: " + ei);
+                                context.log(`Error in stats: ${ei}`);
+                            }
+                            if(ii == 51) {
+                                break;
                             }
                         }
                         repo.additions = additions;
                         repo.subtractions = subtractions;
                         resolve(repo);
+                    }).catch(err => {
+                        context.log(err);
                     });
                 }));
                 */
