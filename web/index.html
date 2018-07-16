@@ -5,14 +5,14 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="keywords" content="github, microsoft, mvp, commits, azure functions" />
-    <meta name="description" content="Tool to get a yearly aggregrate of your GitHub commits for things like the Microsoft MVP Program." />
+    <meta name="description" content="Tool to get a yearly aggregate of your GitHub commits for things like the Microsoft MVP Program." />
     <title>Get a Yearly Aggregate of Your GitHub Commits</title>
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" />
     <link rel="stylesheet" href="./node_modules/normalize.css/normalize.css" />
     <link rel="stylesheet" href="./node_modules/milligram/dist/milligram.min.css" />
     <link rel="stylesheet" href="./node_modules/metronical.metron/dist/css/app.css" />
-    <script type="text/javascript" src="../node_modules/rsvp/dist/rsvp.js"></script>
-    <script type="text/javascript" src="../node_modules/metronical.metron/dist/gen/metron.js"></script>
+    <script type="text/javascript" src="./node_modules/rsvp/dist/rsvp.js"></script>
+    <script type="text/javascript" src="./node_modules/metronical.metron/dist/gen/metron.js"></script>
   </head>
   <body>
       <h1>GitHub Commits for the Past Year</h1>
@@ -24,6 +24,17 @@
         <button class="button button-outline">Gimme Stats</button>
       </fieldset>
       <div class="container">
+        <table>
+          <thead>
+            <th>Repo</th>
+            <th>Fork?</th>
+            <th>Commits</th>
+            <th>Additions</th>
+            <th>Subtractions</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
       </div>
   </body>
   <script type="text/javascript">
@@ -32,37 +43,21 @@
       metron.web.get(testUrl + "?name=" + uname, {}, null, "json", function (data) {
             console.log(data);
             var repos = data.commits;
+            console.log(repos);
             for(var i = 0; i < repos.length; i++) {
-              document.querySelector(".container").innerHTML =  '<div class="row"> \
-              <div class="column"> \
-                <table> \
-                  <thead> \
-                    <tr> \
-                      <th>Repo</th> \
-                      <th>Fork?</th> \
-                      <th>Commits</th> \
-                      <th>Additions</th> \
-                      <th>Subtractions</th> \
-                    </tr> \
-                  </thead> \
-                  <tbody> \
-                    <tr> \
+              document.selectOne("tbody").append('<tr> \
                       <td>' + repos[i].name + '</td> \
                       <td>' + repos[i].isFork + '</td> \
                       <td>' + repos[i].commits + '</td> \
                       <td>' + repos[i].additions + '</td> \
                       <td>' + repos[i].subtractions + '</td> \
-                    </tr> \
-                  </tbody> \
-                </table> \
-              </div> \
-            </div>';
+                    </tr>');
             }
         }, (txt, jsn, xml) => {
             document.querySelector("[data-m-segment='alert']").innerHTML = txt;
         });
     }
-    document.querySelector("button").addEventListener("click", function(e) {
+    document.selectOne("button").addEventListener("click", function(e) {
       var uname = document.querySelector("#gUsername").value;
       getStats(uname);
     });

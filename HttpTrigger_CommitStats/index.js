@@ -47,8 +47,11 @@ module.exports = function (context, req) {
                         });
                         repo.commits = pSum;
                         resolve(repo);
+                    }).catch(err => {
+                        context.log(err);
                     });
                 }));
+                /*
                 p.push(new Promise(resolve => {
                     octo.repos.getStatsCodeFrequency({
                         owner: uname
@@ -71,6 +74,7 @@ module.exports = function (context, req) {
                         resolve(repo);
                     });
                 }));
+                */
             }
             Promise.all(p).then(data => {
                 const commits = data.filter(function(itm, pos) {
@@ -82,12 +86,12 @@ module.exports = function (context, req) {
                };
                context.done();
             }).catch(err => {
-                context.log(`Any error occurred while getting the repository list: ${err}`)
+                context.log(`An error occurred while getting the repository list: ${err}`)
             });
         }).catch(err => {
             context.res = {
                 status: 500
-                , body: `Any error occurred while getting the repository information: ${err}`
+                , body: `An error occurred while getting the repository information: ${err}`
             };
             context.done();
         });
