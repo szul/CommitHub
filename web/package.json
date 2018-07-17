@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.html",
   "dependencies": {
+    "metronical.metron": "git+https://github.com/metronical/metron.git#v3",
     "milligram": "^1.3.0",
-    "metronical.metron": "^2.8.16"
+    "serve": "^9.2.0"
   },
   "devDependencies": {},
   "scripts": {
+    "now-start": "serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -4,15 +4,23 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="keywords" content="github, microsoft, mvp, commits, azure functions" />
+    <meta name="keywords" content="github, github api, microsoft, mvp, commits, azure functions" />
     <meta name="description" content="Tool to get a yearly aggregate of your GitHub commits for things like the Microsoft MVP Program." />
     <title>Get a Yearly Aggregate of Your GitHub Commits</title>
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" />
     <link rel="stylesheet" href="./node_modules/normalize.css/normalize.css" />
     <link rel="stylesheet" href="./node_modules/milligram/dist/milligram.min.css" />
     <link rel="stylesheet" href="./node_modules/metronical.metron/dist/css/app.css" />
-    <script type="text/javascript" src="./node_modules/rsvp/dist/rsvp.js"></script>
     <script type="text/javascript" src="./node_modules/metronical.metron/dist/gen/metron.js"></script>
+    <style media="screen">
+      body {
+        margin: 5rem;
+      }
+      fieldset {
+        width: 50%;
+        margin: auto auto 10rem auto;
+      }
+    </style>
   </head>
   <body>
       <h1>GitHub Commits for the Past Year</h1>
@@ -29,8 +37,6 @@
             <th>Repo</th>
             <th>Fork?</th>
             <th>Commits</th>
-            <th>Additions</th>
-            <th>Subtractions</th>
           </thead>
           <tbody>
           </tbody>
@@ -38,27 +44,28 @@
       </div>
   </body>
   <script type="text/javascript">
-    var testUrl = "http://localhost:7071/api/HttpTrigger_CommitStats";
+    //var url = "http://localhost:7071/api/HttpTrigger_CommitStats";
+    var url = "https://szul-commithub.azurewebsites.net/api/HttpTrigger_CommitStats?code=oiMeREBae4eQnE2FcRucVoTlAH8cw0BXf9NqIICfaROJPpXmkgZ3lQ==";
     function getStats(uname) {
-      metron.web.get(testUrl + "?name=" + uname, {}, null, "json", function (data) {
-            console.log(data);
+      metron.web.get(url + "&name=" + uname, {}, null, "json", function (data) {
             var repos = data.commits;
-            console.log(repos);
             for(var i = 0; i < repos.length; i++) {
-              document.selectOne("tbody").append('<tr> \
-                      <td>' + repos[i].name + '</td> \
-                      <td>' + repos[i].isFork + '</td> \
-                      <td>' + repos[i].commits + '</td> \
-                      <td>' + repos[i].additions + '</td> \
-                      <td>' + repos[i].subtractions + '</td> \
-                    </tr>');
+              if(repos[i].commits > 0) {
+                document.selectOne("tbody").append('<tr> \
+                        <td><a href="' + repos[i].url + '">' + repos[i].name + '</a></td> \
+                        <td>' + repos[i].isFork + '</td> \
+                        <td>' + repos[i].commits + '</td> \
+                      </tr>');
+              }
             }
+            metron.page.showAlerts("[data-m-segment='alert']", metron.SUCCESS , "<p>Acquired GitHub Commits for: " + uname);
         }, (txt, jsn, xml) => {
-            document.querySelector("[data-m-segment='alert']").innerHTML = txt;
+          metron.page.showAlerts("[data-m-segment='alert']", metron.DANGER , "<p>" + txt + "</p>");
         });
     }
     document.selectOne("button").addEventListener("click", function(e) {
       var uname = document.querySelector("#gUsername").value;
+      metron.page.showAlerts("[data-m-segment='alert']", metron.INFO , "<p>Acquiring GitHub Commits. This may take between 15-60 seconds.</p>");
       getStats(uname);
     });
   </script>
