@@ -65,6 +65,8 @@
     }
     document.selectOne("button").addEventListener("click", function(e) {
       var uname = document.querySelector("#gUsername").value;
+      document.selectOne("tbody").empty();
+      metron.page.clearAlerts("[data-m-segment='alert']");
       metron.page.showAlerts("[data-m-segment='alert']", metron.INFO , "<p>Acquiring GitHub Commits. This may take between 15-60 seconds.</p>");
       getStats(uname);
     });
